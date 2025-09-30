@@ -140,7 +140,7 @@ export default function ArtistStats() {
           </div>
 
           {/* Barra de navegação inferior */}
-          <div className="p-4 flex justify-around items-center border-t border-gray-800 bg-[#0f0f0f]/70 backdrop-blur-sm">
+          <div className="p-4 flex justify-around items-center border-t border-gray-800 bg-[#0f0f0f]/70 backdrop-blur-sm fixed bottom-0 w-full">
             <Link href="/">
               <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
                 <Home className="w-6 h-6" />
