@@ -1,15 +1,18 @@
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Audiowide } from "next/font/google";
+
+const audiowide = Audiowide({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export default function App({ Component, pageProps }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="bg-black min-h-screen">
+      <Component {...pageProps} />
       <Navbar />
-      <main className="container mx-auto px-4 py-8 flex-grow">
-        <Component {...pageProps} />
-      </main>
-      <Footer />
     </div>
-  );
+  )
 }
