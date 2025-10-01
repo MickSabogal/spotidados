@@ -15,7 +15,7 @@ const TEAM = [
     github: "https://github.com/guilhermesfranca",
     linkedin: "https://www.linkedin.com/in/guilhermesfranca",
     email: "guilhermesfranca@outlook.com",
-    image: "/cb.jpg",
+    image: "/GF.jpg",
   },
   {
     name: "Jhow Tinoco",

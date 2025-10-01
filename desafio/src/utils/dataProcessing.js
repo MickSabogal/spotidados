@@ -153,3 +153,49 @@ export function estacaoMaisOuvida() {
     b[1] > a[1] ? b : a
   )[0];
 }
+
+export function filterHistoryByPeriod(history = [], period = "alltime") {
+  const now = Date.now();
+  let start;
+  switch (period) {
+    case "month":
+      start = new Date();
+      start.setMonth(start.getMonth() - 1);
+      break;
+    case "6months":
+      start = new Date();
+      start.setMonth(start.getMonth() - 6);
+      break;
+    case "1year":
+      start = new Date();
+      start.setFullYear(start.getFullYear() - 1);
+      break;
+    case "alltime":
+    default:
+      start = new Date(0);
+      break;
+  }
+  const startTs = start.getTime();
+  return history.filter((item) => {
+    const t = new Date(item.ts).getTime();
+    return !Number.isNaN(t) && t >= startTs;
+  });
+}
+
+export function topSongsFromHistory(history = [], opts = {}) {
+  const { limit = 100, by = "ms" } = opts;
+  const map = {};
+  history.forEach((entry) => {
+    const track = entry.master_metadata_track_name;
+    const artist = entry.master_metadata_album_artist_name;
+    if (!track || !artist) return;
+    const key = `${artist} - ${track}`;
+    if (!map[key]) map[key] = { song: key, count: 0, ms: 0 };
+    map[key].count += 1;
+    map[key].ms += entry.ms_played || 0;
+  });
+  const arr = Object.values(map);
+  if (by === "ms") arr.sort((a, b) => b.ms - a.ms);
+  else arr.sort((a, b) => b.count - a.count);
+  return arr.slice(0, limit);
+}

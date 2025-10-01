@@ -121,9 +121,9 @@ export default function HomePage() {
 
         {/* Botón para ver todos los artistas */}
         <div className="px-4 mt-4 mb-20">
-          <Link href="/top100">
+          <Link href="/top100Songs">
             <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
-              Ver Todos los Artistas Más Escuchados
+              See the most played songs
             </button>
           </Link>
         </div>
