@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Home, SquarePen } from 'lucide-react'
 
-export default function Home() {
+export default function HomePage() {  // Cambié el nombre a HomePage
   const topArtists = [
     { id: 1, name: 'Chris Brown', image: '/images/chris_brown.jpg' },
     { id: 2, name: 'Shakira', image: '/images/shakira.jpg' },
@@ -98,13 +99,28 @@ export default function Home() {
       </div>
 
       {/* Botón para ver todos los artistas */}
-      <div className="px-4 mt-4">
+      <div className="px-4 mt-4 mb-20">
         <Link href="/top-artists">
           <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
             Ver Todos los Artistas Más Escuchados
           </button>
         </Link>
       </div>
+
+      {/* Barra de navegación inferior */}
+      <div className="p-4 flex justify-around items-center border-t border-gray-800 bg-[#0f0f0f]/70 backdrop-blur-sm fixed bottom-0 left-0 right-0 z-50">
+        <Link href="/">
+          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
+            <Home className="w-6 h-6" />
+          </button>
+        </Link>
+        <Link href="/find">
+          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition">
+            <SquarePen className="w-6 h-6" />
+          </button>
+        </Link>
+        
+      </div>
     </div>
   )
-}
+} 
