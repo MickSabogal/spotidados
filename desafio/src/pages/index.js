@@ -2,14 +2,28 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Home, SquarePen } from 'lucide-react'
+import dadosHistory from '../data/history.json'
 
-export default function HomePage() {  // Cambié el nombre a HomePage
-  const topArtists = [
-    { id: 1, name: 'Chris Brown', image: '/images/chris_brown.jpg' },
-    { id: 2, name: 'Shakira', image: '/images/shakira.jpg' },
-    { id: 3, name: 'Korn', image: '/images/korn.jpg' },
-    { id: 4, name: '+50', count: 50 }
-  ]
+export default function HomePage() {
+  // calcular top artists a partir do history.json
+  const artistCounts = {}
+  dadosHistory.forEach((item) => {
+    const name =
+      item.master_metadata_album_artist_name ||
+      item.artistName ||
+      item.master_metadata_track_artist_name ||
+      null
+    if (!name) return
+    artistCounts[name] = (artistCounts[name] || 0) + 1
+  })
+
+  const topArtists = Object.entries(artistCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+    .map((a, i) => ({ id: i + 1, ...a }))
+
+  const fmt = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') || '0'
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">
@@ -18,12 +32,7 @@ export default function HomePage() {  // Cambié el nombre a HomePage
         <div className="flex items-center gap-3">
           {/* Foto de perfil */}
           <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden flex-shrink-0 relative">
-            <Image
-              src="/images/unnamed.jpg"
-              alt="Profile"
-              fill
-              className="object-cover"
-            />
+            <Image src="/images/unnamed.jpg" alt="Profile" fill className="object-cover" />
           </div>
 
           {/* Barra de búsqueda */}
@@ -38,7 +47,7 @@ export default function HomePage() {  // Cambié el nombre a HomePage
         </div>
       </div>
 
-      {/* Top Artist of this Month */}
+      {/* Top Artist of this Month - agora usando dados do history.json */}
       <div className="px-4 mt-6">
         <div className="flex items-center gap-3 mb-4">
           <h2 className="text-xl font-semibold whitespace-nowrap">Top Artist of this Month</h2>
@@ -49,24 +58,19 @@ export default function HomePage() {  // Cambié el nombre a HomePage
           {topArtists.map((artist) => (
             <Link
               key={artist.id}
-              href={artist.count ? '/top-artists' : `/artist/${artist.id}`}
+              href={`/artist?name=${encodeURIComponent(artist.name)}`}
               className="flex flex-col items-center flex-shrink-0"
             >
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-1">
                 <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center overflow-hidden relative">
-                  {artist.count ? (
-                    <span className="text-3xl font-bold">{artist.count}</span>
-                  ) : (
-                    <Image
-                      src={artist.image}
-                      alt={artist.name}
-                      fill
-                      className="object-cover"
-                    />
-                  )}
+                  {/* sem imagens, mostrar iniciais */}
+                  <span className="text-sm text-gray-300 text-center px-2">
+                    {artist.name.split(' ').slice(0,2).map(n=>n[0]).join('')}
+                  </span>
                 </div>
               </div>
-              <p className="mt-2 text-sm text-center">{artist.name}</p>
+              <p className="mt-2 text-sm text-center max-w-[5.5rem] truncate">{artist.name}</p>
+              <p className="text-xs text-gray-400">{fmt(artist.count)} plays</p>
             </Link>
           ))}
         </div>
@@ -82,11 +86,9 @@ export default function HomePage() {  // Cambié el nombre a HomePage
         {/* Card de Wrapped 2024 */}
         <Link href="/estadisticas" className="block">
           <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110">
-            {/* Elementos decorativos */}
             <div className="absolute top-6 left-6 w-24 h-24 bg-pink-600/60 rounded-2xl transform -rotate-12"></div>
             <div className="absolute bottom-6 right-6 w-40 h-40 border-8 border-red-400/40 rounded-3xl transform rotate-45"></div>
 
-            {/* Contenido */}
             <div className="relative z-10 text-center py-12">
               <h3 className="text-4xl font-bold mb-3">Your 2024 Wrapped</h3>
               <p className="text-white/90 mb-8 text-lg">Jump into your year in audio.</p>
@@ -119,8 +121,7 @@ export default function HomePage() {  // Cambié el nombre a HomePage
             <SquarePen className="w-6 h-6" />
           </button>
         </Link>
-        
       </div>
     </div>
   )
-} 
+}

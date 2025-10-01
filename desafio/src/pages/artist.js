@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/router";
 import { Home, Edit, Users } from "lucide-react";
 import dadosHistory from "../data/history.json";
 import {
@@ -90,32 +91,51 @@ function obterDadosArtista(nomeArtista) {
 }
 
 export default function ArtistStats() {
-  const artistName = "Anitta"; // Pode vir de props ou router
+  const router = useRouter();
 
+  // pega "name" da query ?name=Artist%20Name
+  const queryName = Array.isArray(router.query.name)
+    ? router.query.name[0]
+    : router.query.name;
+
+  const [artistName, setArtistName] = useState(() =>
+    typeof queryName === "string" ? decodeURIComponent(queryName) : "Anitta"
+  );
   const [stats, setStats] = useState(null);
   const [totalPlays, setTotalPlays] = useState(0);
 
+  // atualiza artistName quando a rota mudar (router.query disponível só depois do primeiro render)
   useEffect(() => {
-    // Carregar dados do artista
-    const dadosArtista = obterDadosArtista(artistName);
-    setStats(dadosArtista);
+    if (!router.isReady) return;
+    const nameParam = Array.isArray(router.query.name)
+      ? router.query.name[0]
+      : router.query.name;
+    setArtistName(nameParam ? decodeURIComponent(nameParam) : "Anitta");
+  }, [router.isReady, router.query.name]);
 
-    // Total de plays da conta
-    setTotalPlays(totalMusicasTocadas());
+  // carrega stats do artista sempre que artistName muda
+  useEffect(() => {
+    if (!artistName) return;
+    const data = obterDadosArtista(artistName); // função já presente no arquivo
+    setStats(data);
+
+    // calcula plays totais do history.json
+    if (typeof dadosHistory !== "undefined" && Array.isArray(dadosHistory)) {
+      setTotalPlays(dadosHistory.length);
+    }
   }, [artistName]);
 
-  // helpers
   const fmt = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
 
   const percentArtist = useMemo(() => {
-    if (!totalPlays || !stats) return "0.0";
+    if (!stats || !totalPlays) return "0.0";
     return ((stats.artistPlays / totalPlays) * 100).toFixed(1);
   }, [stats, totalPlays]);
 
   if (!stats) {
     return (
-      <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center">
-        <p className="text-white text-lg">Carregando dados...</p>
+      <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center text-gray-400">
+        Carregando...
       </div>
     );
   }
