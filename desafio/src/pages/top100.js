@@ -1,7 +1,6 @@
 // pages/top100.js
-import { Home, Edit, Users } from ''
-import { useState } from 'react'
-import link from 'next/link'
+import { Home, Edit, Users } from 'lucide-react'
+import Link from 'next/link'
 
 
 
