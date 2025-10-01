@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Home() {
   const topArtists = [
-    { id: 1, name: 'Avery Davis', image: '/artist1.jpg' },
-    { id: 2, name: 'Chidi Eze', image: '/artist2.jpg' },
-    { id: 3, name: 'Yael Amari', image: '/artist3.jpg' },
+    { id: 1, name: 'Chris Brown', image: '/images/chris_brown.jpg' },
+    { id: 2, name: 'Shakira', image: '/images/shakira.jpg' },
+    { id: 3, name: 'Korn', image: '/images/korn.jpg' },
     { id: 4, name: '+50', count: 50 }
   ]
 
@@ -15,8 +16,13 @@ export default function Home() {
       <div className="p-4">
         <div className="flex items-center gap-3">
           {/* Foto de perfil */}
-          <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden flex-shrink-0">
-            <img src="/profile.jpg" alt="Profile" className="w-full h-full object-cover" />
+          <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden flex-shrink-0 relative">
+            <Image
+              src="/images/unnamed.jpg"
+              alt="Profile"
+              fill
+              className="object-cover"
+            />
           </div>
 
           {/* Barra de búsqueda */}
@@ -46,11 +52,16 @@ export default function Home() {
               className="flex flex-col items-center flex-shrink-0"
             >
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-1">
-                <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
+                <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center overflow-hidden relative">
                   {artist.count ? (
                     <span className="text-3xl font-bold">{artist.count}</span>
                   ) : (
-                    <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
+                    <Image
+                      src={artist.image}
+                      alt={artist.name}
+                      fill
+                      className="object-cover"
+                    />
                   )}
                 </div>
               </div>
@@ -67,7 +78,7 @@ export default function Home() {
           <div className="h-px flex-1 bg-gray-700"></div>
         </div>
 
-        {/* Card de Wrapped 2024 - SOLUCIÓN */}
+        {/* Card de Wrapped 2024 */}
         <Link href="/estadisticas" className="block">
           <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110">
             {/* Elementos decorativos */}
@@ -79,7 +90,7 @@ export default function Home() {
               <h3 className="text-4xl font-bold mb-3">Your 2024 Wrapped</h3>
               <p className="text-white/90 mb-8 text-lg">Jump into your year in audio.</p>
               <button className="bg-blue-400 hover:bg-blue-500 text-black font-bold px-10 py-3 rounded-full transition-colors">
-                Let's go
+                Let&apos;s go
               </button>
             </div>
           </div>
