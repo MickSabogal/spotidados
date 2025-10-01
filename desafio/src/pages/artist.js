@@ -1,12 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import BottomNav from "@/components/BottomNav";
+import { useRouter } from "next/router";
 import { Home, Edit, Users } from "lucide-react";
 import dadosHistory from "../data/history.json";
-import {
-  totalMusicasTocadas,
-  totalMusicasDiferentes,
-  totalMinutosOuvidos,
-  estacaoMaisOuvida,
-} from "../utils/dataProcessing.js";
+import Image from "next/image";
 
 function obterDadosArtista(nomeArtista) {
   if (!dadosHistory) return null;
@@ -90,32 +87,51 @@ function obterDadosArtista(nomeArtista) {
 }
 
 export default function ArtistStats() {
-  const artistName = "Anitta"; // Pode vir de props ou router
+  const router = useRouter();
 
+  // pega "name" da query ?name=Artist%20Name
+  const queryName = Array.isArray(router.query.name)
+    ? router.query.name[0]
+    : router.query.name;
+
+  const [artistName, setArtistName] = useState(() =>
+    typeof queryName === "string" ? decodeURIComponent(queryName) : "Eminem"
+  );
   const [stats, setStats] = useState(null);
   const [totalPlays, setTotalPlays] = useState(0);
 
+  // atualiza artistName quando a rota mudar (router.query disponível só depois do primeiro render)
   useEffect(() => {
-    // Carregar dados do artista
-    const dadosArtista = obterDadosArtista(artistName);
-    setStats(dadosArtista);
+    if (!router.isReady) return;
+    const nameParam = Array.isArray(router.query.name)
+      ? router.query.name[0]
+      : router.query.name;
+    setArtistName(nameParam ? decodeURIComponent(nameParam) : "Anitta");
+  }, [router.isReady, router.query.name]);
 
-    // Total de plays da conta
-    setTotalPlays(totalMusicasTocadas());
+  // carrega stats do artista sempre que artistName muda
+  useEffect(() => {
+    if (!artistName) return;
+    const data = obterDadosArtista(artistName); // função já presente no arquivo
+    setStats(data);
+
+    // calcula plays totais do history.json
+    if (typeof dadosHistory !== "undefined" && Array.isArray(dadosHistory)) {
+      setTotalPlays(dadosHistory.length);
+    }
   }, [artistName]);
 
-  // helpers
   const fmt = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
 
   const percentArtist = useMemo(() => {
-    if (!totalPlays || !stats) return "0.0";
+    if (!stats || !totalPlays) return "0.0";
     return ((stats.artistPlays / totalPlays) * 100).toFixed(1);
   }, [stats, totalPlays]);
 
   if (!stats) {
     return (
-      <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center">
-        <p className="text-white text-lg">Carregando dados...</p>
+      <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center text-gray-400">
+        Carregando...
       </div>
     );
   }
@@ -127,9 +143,36 @@ export default function ArtistStats() {
         <div className="bg-gradient-to-b from-[#111111] to-[#050505] rounded-b-3xl overflow-hidden shadow-2xl">
           {/* Imagem topo */}
           <div className="relative w-full h-72 overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900 flex items-center justify-center">
+            <div className="w-full h-full bg-[#111111] flex items-center justify-center">
               {" "}
-              <h1 className="text-white text-6xl font-bold tracking-tight"></h1>
+              <Image
+                src={
+                  artistName === "Eminem"
+                    ? "/eminem.jpg"
+                    : artistName === "Kendrick Lamar"
+                    ? "/kendrick.jpg"
+                    : artistName === "TOOL"
+                    ? "/tool.jpg"
+                    : artistName === "System Of A Down"
+                    ? "/System.jpg"
+                    : artistName === "J. Cole"
+                    ? "/jcole.jpg"
+                    : artistName === "Earl Sweatshirt"
+                    ? "/earl.jpg"
+                    : artistName === "BROCKHAMPTON"
+                    ? "/brock.jpg"
+                    : artistName === "Vince Staples"
+                    ? "/vince.jpg"
+                    : artistName === "Kanye West"
+                    ? "/kanye.jpeg"
+                    : artistName === "Slow J"
+                    ? "/slowj.jpg"
+                    : "/default.png"
+                }
+                alt="Artist"
+                fill
+                className="rounded-b-3xl object-cover"
+              />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
             <div className="absolute bottom-6 left-6">
@@ -266,23 +309,6 @@ export default function ArtistStats() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Barra de navegação inferior */}
-      <div className="p-4 flex justify-around items-center border-t border-gray-800 bg-[#0f0f0f]/90 backdrop-blur-sm fixed bottom-0 w-full max-w-md">
-        <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-          <Home className="w-6 h-6" />
-          <span className="text-xs">Início</span>
-        </button>
-
-        <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-          <Edit className="w-6 h-6" />
-          <span className="text-xs">Buscar</span>
-        </button>
-
-        <button className="flex flex-col items-center gap-1 bg-gradient-to-r from-[#1DB954] to-[#12a94a] text-white rounded-full p-3 hover:opacity-95 transition">
-          <Users className="w-6 h-6" />
-        </button>
       </div>
     </div>
   );

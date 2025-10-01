@@ -138,14 +138,14 @@ export function horaMaisOuvida() {
 export function estacaoMaisOuvida() {
   if (!dadosHistory) return "N/A";
 
-  const contagemEstacoes = { inverno: 0, primavera: 0, verão: 0, outono: 0 };
+  const contagemEstacoes = { Winter: 0, Spring: 0, Summer: 0, Autumn: 0 };
 
   dadosHistory.forEach((m) => {
     const mes = new Date(m.ts).getMonth(); // 0 = Janeiro, 11 = Dezembro
-    if ([11, 0, 1].includes(mes)) contagemEstacoes.inverno += 1;
-    else if ([2, 3, 4].includes(mes)) contagemEstacoes.primavera += 1;
-    else if ([5, 6, 7].includes(mes)) contagemEstacoes.verão += 1;
-    else contagemEstacoes.outono += 1;
+    if ([11, 0, 1].includes(mes)) contagemEstacoes.Winter += 1;
+    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Spring += 1;
+    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Summer += 1;
+    else contagemEstacoes.Autumn += 1;
   });
 
   // Retorna a estação com maior contagem

@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import BottomNav from "../components/BottomNav";
+import SearchBar from "../components/SearchBar";
+
 import { Audiowide } from "next/font/google";
 
 const audiowide = Audiowide({
@@ -11,7 +12,9 @@ const audiowide = Audiowide({
 export default function App({ Component, pageProps }) {
   return (
     <div className="bg-black min-h-screen">
+      
       <Component {...pageProps} />
+      <BottomNav />
     </div>
-  )
+  );
 }

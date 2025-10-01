@@ -7,6 +7,12 @@ import { useState } from 'react'
 export default function Top100() {
 const [activeFilter, setActiveFilter] = useState("month");
 
+<<<<<<< HEAD
+=======
+
+
+export default function Top100() {
+>>>>>>> 6a8500d7a864f49007263fafa47ab71f56d90e53
 const songs = [
     "Coldplay - Viva La Vida",
     "Shakira - Hips Don't Lie",
