@@ -102,7 +102,7 @@ export default function HomePage() {
           </div>
 
           {/* Card de Wrapped 2024 */}
-          <Link href="/estadisticas" className="block">
+          <Link href="/estatisticas" className="block">
             <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110">
               <div className="absolute top-6 left-6 w-24 h-24 bg-pink-600/60 rounded-2xl transform -rotate-12"></div>
               <div className="absolute bottom-6 right-6 w-40 h-40 border-8 border-red-400/40 rounded-3xl transform rotate-45"></div>
