@@ -44,14 +44,14 @@ export default function EstatisticasPage() {
 
                 {/* Estadísticas en cuadrados */}
                 <div className="grid grid-cols-2 gap-4 mt-6">
-                    <StatCard title="Músicas Tocadas" value={totalMusicasTocadas()} />
-                    <StatCard title="Músicas Diferentes" value={totalMusicasDiferentes()} />
-                    <StatCard title="Minutos Ouvidos" value={totalMinutosOuvidos()} />
-                    <StatCard title="Média Diária" value={`${mediaDiariaOuvida()} min`} />
-                    <StatCard title="Estação Favorita" value={estacaoMaisOuvida()} isHighlight />
-                    <StatCard title="Hora Mais Ouvida" value={horaMaisOuvida()} />
-                    <StatCard title="Artista Mais Ouvido" value={encontrarArtistaMaisOuvido()} />
-                    <StatCard title="Primeira Música" value={obterPrimeiraMusica()} />
+                    <StatCard title="Played Music" value={totalMusicasTocadas()} />
+                    <StatCard title="Different Music" value={totalMusicasDiferentes()} />
+                    <StatCard title="Minutes Listened" value={totalMinutosOuvidos()} />
+                    <StatCard title="Daily Average" value={`${mediaDiariaOuvida()} min`} />
+                    <StatCard title="Favorite Season" value={estacaoMaisOuvida()} isHighlight />
+                    <StatCard title="Preferred Time" value={horaMaisOuvida()} />
+                    <StatCard title="Most Listened Artist" value={encontrarArtistaMaisOuvido()} />
+                    <StatCard title="First Music Played" value={obterPrimeiraMusica()} />
                 </div>
 
                 {/* Botones Top 100 */}
