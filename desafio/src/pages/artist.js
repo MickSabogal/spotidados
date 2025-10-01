@@ -3,12 +3,7 @@ import BottomNav from "@/components/BottomNav";
 import { useRouter } from "next/router";
 import { Home, Edit, Users } from "lucide-react";
 import dadosHistory from "../data/history.json";
-import {
-  totalMusicasTocadas,
-  totalMusicasDiferentes,
-  totalMinutosOuvidos,
-  estacaoMaisOuvida,
-} from "../utils/dataProcessing.js";
+import Image from "next/image";
 
 function obterDadosArtista(nomeArtista) {
   if (!dadosHistory) return null;
@@ -148,9 +143,36 @@ export default function ArtistStats() {
         <div className="bg-gradient-to-b from-[#111111] to-[#050505] rounded-b-3xl overflow-hidden shadow-2xl">
           {/* Imagem topo */}
           <div className="relative w-full h-72 overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900 flex items-center justify-center">
+            <div className="w-full h-full bg-[#111111] flex items-center justify-center">
               {" "}
-              <h1 className="text-white text-6xl font-bold tracking-tight"></h1>
+              <Image
+                src={
+                  artistName === "Eminem"
+                    ? "/eminem.jpg"
+                    : artistName === "Kendrick Lamar"
+                    ? "/kendrick.jpg"
+                    : artistName === "TOOL"
+                    ? "/tool.jpg"
+                    : artistName === "System Of A Down"
+                    ? "/System.jpg"
+                    : artistName === "J. Cole"
+                    ? "/jcole.jpg"
+                    : artistName === "Earl Sweatshirt"
+                    ? "/earl.jpg"
+                    : artistName === "BROCKHAMPTON"
+                    ? "/brock.jpg"
+                    : artistName === "Vince Staples"
+                    ? "/vince.jpg"
+                    : artistName === "Kanye West"
+                    ? "/kanye.jpeg"
+                    : artistName === "Slow J"
+                    ? "/slowj.jpg"
+                    : "/default.png"
+                }
+                alt="Artist"
+                fill
+                className="rounded-b-3xl object-cover"
+              />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
             <div className="absolute bottom-6 left-6">

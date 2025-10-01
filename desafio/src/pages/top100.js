@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 
 
-export default function Home() {
+export default function Top100() {
 const songs = [
     "Coldplay - Viva La Vida",
     "Shakira - Hips Don’t Lie",
