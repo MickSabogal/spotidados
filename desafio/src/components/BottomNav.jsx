@@ -1,4 +1,4 @@
-import { Home, Edit, Users } from "lucide-react";
+import { Home, Edit, Users, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export default function BottomNav() {
@@ -12,14 +12,14 @@ export default function BottomNav() {
           </button>
         </Link>
 
-        <Link href="/search">
+        <Link href="/estatisticas">
           <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-            <Edit className="w-6 h-6" />
-            <span className="text-xs">Buscar</span>
+            <Sparkles className="w-6 h-6" />
+            <span className="text-xs">Wrapped</span>
           </button>
         </Link>
 
-        <Link href="/profile">
+        <Link href="/perfil">
           <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
             <Users className="w-6 h-6" />
             <span className="text-xs">Perfil</span>

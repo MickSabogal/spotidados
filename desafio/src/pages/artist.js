@@ -95,7 +95,7 @@ export default function ArtistStats() {
     : router.query.name;
 
   const [artistName, setArtistName] = useState(() =>
-    typeof queryName === "string" ? decodeURIComponent(queryName) : "Anitta"
+    typeof queryName === "string" ? decodeURIComponent(queryName) : "Eminem"
   );
   const [stats, setStats] = useState(null);
   const [totalPlays, setTotalPlays] = useState(0);

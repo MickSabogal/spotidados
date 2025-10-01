@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Home, SquarePen } from "lucide-react";
 import dadosHistory from "../data/history.json";
+import SearchBar from "@/components/SearchBar";
 
 export default function HomePage() {
   // calcular top artists a partir do history.json
@@ -16,7 +17,7 @@ export default function HomePage() {
     if (!name) return;
     artistCounts[name] = (artistCounts[name] || 0) + 1;
   });
-
+  const artistName = "Eminem"; // Valor padrão para a imagem
   const topArtists = Object.entries(artistCounts)
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
@@ -29,29 +30,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-black text-white flex justify-center">
       <div className="w-full max-w-md pb-24">
         {/* Header con búsqueda */}
-        <div className="p-4">
-          <div className="flex items-center gap-3">
-            {/* Foto de perfil */}
-            <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden flex-shrink-0 relative">
-              <Image
-                src="/cb.jpg"
-                alt="Profile"
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            {/* Barra de búsqueda */}
-            <div className="flex-1 bg-gradient-to-r from-[#6BCA6F] to-[#000000] rounded-full px-4 py-2 flex items-center gap-2">
-              <span>🔍</span>
-              <input
-                type="text"
-                placeholder="Song, album, artist, etc"
-                className="bg-transparent outline-none flex-1 text-white placeholder-white"
-              />
-            </div>
-          </div>
-        </div>
+       <SearchBar />
 
         {/* Top Artist of this Month - agora usando dados do history.json */}
         <div className="px-4 mt-6">
@@ -71,14 +50,34 @@ export default function HomePage() {
               >
                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-1">
                   <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center overflow-hidden relative">
-                    {/* sem imagens, mostrar iniciais */}
-                    <span className="text-sm text-gray-300 text-center px-2">
-                      {artist.name
-                        .split(" ")
-                        .slice(0, 2)
-                        .map((n) => n[0])
-                        .join("")}
-                    </span>
+                    <Image
+                      src={
+                        artist.name === "Eminem"
+                          ? "/eminem.jpg"
+                          : artist.name === "Kendrick Lamar"
+                          ? "/kendrick.jpg"
+                          : artist.name === "TOOL"
+                          ? "/tool.jpg"
+                          : artist.name === "System Of A Down"
+                          ? "/System.jpg"
+                          : artist.name === "J. Cole"
+                          ? "/jcole.jpg"
+                          : artist.name === "Earl Sweatshirt"
+                          ? "/earl.jpg"
+                          : artist.name === "BROCKHAMPTON"
+                          ? "/brock.jpg"
+                          : artist.name === "Vince Staples"
+                          ? "/vince.jpg"
+                          : artist.name === "Kanye West"
+                          ? "/kanye.jpeg"
+                          : artist.name === "Slow J"
+                          ? "/slowj.jpg"
+                          : "/default.png"
+                      }
+                      alt="Artist"
+                      fill
+                      className="rounded-b-3xl object-cover"
+                    />
                   </div>
                 </div>
                 <p className="mt-2 text-sm text-center max-w-[5.5rem] truncate">
