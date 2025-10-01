@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import BottomNav from "@/components/BottomNav";
 import { useRouter } from "next/router";
 import { Home, Edit, Users } from "lucide-react";
 import dadosHistory from "../data/history.json";
@@ -286,23 +287,6 @@ export default function ArtistStats() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Barra de navegação inferior */}
-      <div className="p-4 flex justify-around items-center border-t border-gray-800 bg-[#0f0f0f]/90 backdrop-blur-sm fixed bottom-0 w-full max-w-md">
-        <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-          <Home className="w-6 h-6" />
-          <span className="text-xs">Início</span>
-        </button>
-
-        <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-          <Edit className="w-6 h-6" />
-          <span className="text-xs">Buscar</span>
-        </button>
-
-        <button className="flex flex-col items-center gap-1 bg-gradient-to-r from-[#1DB954] to-[#12a94a] text-white rounded-full p-3 hover:opacity-95 transition">
-          <Users className="w-6 h-6" />
-        </button>
       </div>
     </div>
   );

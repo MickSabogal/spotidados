@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import BottomNav from "../components/BottomNav";
 
 import { Audiowide } from "next/font/google";
 
@@ -11,7 +12,7 @@ export default function App({ Component, pageProps }) {
   return (
     <div className="bg-black min-h-screen">
       <Component {...pageProps} />
-      <h1>teste</h1>
+      <BottomNav />
     </div>
-  )
+  );
 }
