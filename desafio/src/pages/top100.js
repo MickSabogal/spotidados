@@ -116,30 +116,6 @@ return (
         <p className="text-center text-gray-400">Loading your top songs...</p>
         )}
     </div>
-
-      {/* Bottom Navigation */}
-    <div className="p-4 flex justify-around items-center border-t border-gray-800 bg-[#0f0f0f]/70 backdrop-blur-sm fixed bottom-0 w-full">
-        <Link href="/">
-        <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-            <Home className="w-6 h-6" />
-            <span className="text-xs">Início</span>
-        </button>
-        </Link>
-
-        <Link href="/search">
-        <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-            <Edit className="w-6 h-6" />
-            <span className="text-xs">Buscar</span>
-        </button>
-        </Link>
-
-        <Link href="/profile">
-        <button className="flex flex-col items-center gap-1 bg-gradient-to-r from-[#1DB954] to-[#12a94a] text-white rounded-full p-3 hover:opacity-95 transition">
-            <Users className="w-6 h-6" />
-            <span className="text-xs">Perfil</span>
-        </button>
-        </Link>
-    </div>
     </div>
 );
 }
