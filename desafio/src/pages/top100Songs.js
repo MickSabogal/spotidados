@@ -1,4 +1,3 @@
-// pages/top100.js
 import { Home, Edit, Users, Play } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -16,7 +15,6 @@ export default function Top100Songs() {
       setIsLoading(true);
       
       try {
-        // Primeiro, vamos encontrar a data mais recente no histórico
         let mostRecentDate = 0;
         for (let i = 0; i < dadosHistory.length; i++) {
           const entryTime = new Date(dadosHistory[i].ts).getTime();
@@ -25,8 +23,6 @@ export default function Top100Songs() {
           }
         }
         
-        // 1. Calcular timestamp de corte baseado no filtro
-        // Agora usa a data mais recente do histórico, não a data atual
         const referenceDate = mostRecentDate || Date.now();
         let startTimestamp;
         
@@ -45,58 +41,44 @@ export default function Top100Songs() {
             startTimestamp = 0;
             break;
         }
-        
-        console.log("Filtro:", activeFilter);
-        console.log("Data mais recente no histórico:", new Date(mostRecentDate).toLocaleDateString());
-        console.log("Filtrando a partir de:", new Date(startTimestamp).toLocaleDateString());
 
-        // 2. Filtrar e contar em um único loop
         const songCounts = {};
         let minDate = Infinity;
         let maxDate = -Infinity;
-        
+
         for (let i = 0; i < dadosHistory.length; i++) {
           const entry = dadosHistory[i];
           const entryTime = new Date(entry.ts).getTime();
-          
-          // Pular se for inválido ou fora do período
           if (isNaN(entryTime) || entryTime < startTimestamp) continue;
           
-          // Atualizar range de datas
           if (entryTime < minDate) minDate = entryTime;
           if (entryTime > maxDate) maxDate = entryTime;
-          
-          // Contar música
+
           const track = entry.master_metadata_track_name;
           const artist = entry.master_metadata_album_artist_name;
-          
+
           if (track && artist) {
             const key = `${artist} - ${track}`;
             if (!songCounts[key]) {
-              songCounts[key] = { song: key, count: 0, ms: 0 };
+              songCounts[key] = { song: key, count: 0, ms: 0, artist };
             }
             songCounts[key].count += 1;
             songCounts[key].ms += entry.ms_played || 0;
           }
         }
 
-        // 3. Converter para array e ordenar
         const songsArray = Object.values(songCounts);
         songsArray.sort((a, b) => b.count - a.count);
         const top100 = songsArray.slice(0, 100);
 
         setTopSongs(top100);
-        
-        // 4. Definir range de datas
+
         if (minDate !== Infinity && maxDate !== -Infinity) {
-          setDateRange({ 
-            start: new Date(minDate), 
-            end: new Date(maxDate) 
-          });
+          setDateRange({ start: new Date(minDate), end: new Date(maxDate) });
         } else {
           setDateRange({ start: null, end: null });
         }
-        
+
       } catch (error) {
         console.error("Erro ao processar histórico:", error);
         setTopSongs([]);
@@ -109,11 +91,6 @@ export default function Top100Songs() {
     processHistory();
   }, [activeFilter]);
 
-  const handleSongClick = (song) => {
-    console.log("Playing:", song);
-    alert(`Now playing: ${song}`);
-  };
-
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString('pt-PT', { 
@@ -123,11 +100,20 @@ export default function Top100Songs() {
     });
   };
 
+  const formatTime = (ms) => {
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  };
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center py-6">
       {/* Header */}
       <h1 className="text-2xl font-bold mb-2">Top 100 Songs</h1>
-      
+
       {/* Date Range Info */}
       {dateRange.start && dateRange.end && (
         <p className="text-xs text-gray-400 mb-4">
@@ -187,9 +173,9 @@ export default function Top100Songs() {
           </div>
         ) : topSongs.length > 0 ? (
           topSongs.map((item, index) => (
-            <div
+            <Link
               key={index}
-              onClick={() => handleSongClick(item.song)}
+              href={`/artist?name=${encodeURIComponent(item.artist)}`}
               className="group relative bg-gray-900 px-4 py-3 rounded-lg font-medium tracking-wide flex justify-between items-center transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 hover:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-purple-600/60 cursor-pointer border border-transparent hover:border-purple-500/30"
             >
               <span className="relative z-10 transition-colors duration-300 group-hover:text-purple-100 text-sm">
@@ -202,7 +188,7 @@ export default function Top100Songs() {
                 <Play className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all duration-300 text-green-400 transform group-hover:scale-110 fill-green-400" />
               </div>
               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-600/0 via-purple-500/0 to-purple-600/0 group-hover:from-purple-600/20 group-hover:via-purple-500/10 group-hover:to-purple-600/20 transition-all duration-300 pointer-events-none"></div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className="text-center py-8">

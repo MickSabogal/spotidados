@@ -61,7 +61,7 @@ export default function EstatisticasPage() {
                             Top 100 Artists
                         </button>
                     </Link>
-                    <Link href="/top100Songs">
+                    <Link href="/Top100Songs">
                         <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
                             Top 100 Songs
                         </button>
