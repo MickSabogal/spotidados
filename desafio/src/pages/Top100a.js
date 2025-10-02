@@ -1,5 +1,5 @@
 // pages/top100a.js
-import { Home, Edit, Users, Play, Music } from 'lucide-react'
+import { Music } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import dadosHistory from "../data/history.json";
@@ -16,7 +16,7 @@ export default function Top100Artists() {
       setIsLoading(true);
       
       try {
-        // Primeiro, vamos encontrar a data mais recente no histórico
+        // Encontrar a data mais recente no histórico
         let mostRecentDate = 0;
         for (let i = 0; i < dadosHistory.length; i++) {
           const entryTime = new Date(dadosHistory[i].ts).getTime();
@@ -25,8 +25,6 @@ export default function Top100Artists() {
           }
         }
         
-        // 1. Calcular timestamp de corte baseado no filtro
-        // Agora usa a data mais recente do histórico, não a data atual
         const referenceDate = mostRecentDate || Date.now();
         let startTimestamp;
         
@@ -45,12 +43,7 @@ export default function Top100Artists() {
             startTimestamp = 0;
             break;
         }
-        
-        console.log("Filtro:", activeFilter);
-        console.log("Data mais recente no histórico:", new Date(mostRecentDate).toLocaleDateString());
-        console.log("Filtrando a partir de:", new Date(startTimestamp).toLocaleDateString());
 
-        // 2. Filtrar e contar artistas em um único loop
         const artistCounts = {};
         let minDate = Infinity;
         let maxDate = -Infinity;
@@ -58,17 +51,12 @@ export default function Top100Artists() {
         for (let i = 0; i < dadosHistory.length; i++) {
           const entry = dadosHistory[i];
           const entryTime = new Date(entry.ts).getTime();
-          
-          // Pular se for inválido ou fora do período
           if (isNaN(entryTime) || entryTime < startTimestamp) continue;
           
-          // Atualizar range de datas
           if (entryTime < minDate) minDate = entryTime;
           if (entryTime > maxDate) maxDate = entryTime;
           
-          // Contar artista
           const artist = entry.master_metadata_album_artist_name;
-          
           if (artist) {
             if (!artistCounts[artist]) {
               artistCounts[artist] = { artist: artist, count: 0, ms: 0 };
@@ -78,14 +66,12 @@ export default function Top100Artists() {
           }
         }
 
-        // 3. Converter para array e ordenar
         const artistsArray = Object.values(artistCounts);
         artistsArray.sort((a, b) => b.count - a.count);
         const top100 = artistsArray.slice(0, 100);
 
         setTopArtists(top100);
         
-        // 4. Definir range de datas
         if (minDate !== Infinity && maxDate !== -Infinity) {
           setDateRange({ 
             start: new Date(minDate), 
@@ -106,11 +92,6 @@ export default function Top100Artists() {
 
     processHistory();
   }, [activeFilter]);
-
-  const handleArtistClick = (artist) => {
-    console.log("Playing artist:", artist);
-    alert(`Artista: ${artist}`);
-  };
 
   const formatDate = (date) => {
     if (!date) return "";
@@ -194,10 +175,10 @@ export default function Top100Artists() {
           </div>
         ) : topArtists.length > 0 ? (
           topArtists.map((item, index) => (
-            <div
+            <Link
               key={index}
-              onClick={() => handleArtistClick(item.artist)}
-              className="group relative bg-gray-900 px-4 py-3 rounded-lg font-medium tracking-wide flex justify-between items-center transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 hover:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-blue-600/60 cursor-pointer border border-transparent hover:border-blue-500/30"
+              href={`/artist?name=${encodeURIComponent(item.artist)}`}
+              className="group relative block bg-gray-900 px-4 py-3 rounded-lg font-medium tracking-wide flex justify-between items-center transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 hover:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-blue-600/60 border border-transparent hover:border-blue-500/30"
             >
               <span className="relative z-10 transition-colors duration-300 group-hover:text-blue-100 text-sm">
                 {index + 1}. {item.artist}
@@ -214,7 +195,7 @@ export default function Top100Artists() {
                 <Music className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all duration-300 text-green-400 transform group-hover:scale-110" />
               </div>
               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-600/0 via-blue-500/0 to-blue-600/0 group-hover:from-blue-600/20 group-hover:via-blue-500/10 group-hover:to-blue-600/20 transition-all duration-300 pointer-events-none"></div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className="text-center py-8">
