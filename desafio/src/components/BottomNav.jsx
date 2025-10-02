@@ -12,7 +12,7 @@ export default function BottomNav() {
           </button>
         </Link>
 
-        <Link href="/estatisticas">
+        <Link href="/wrapped">
           <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
             <Sparkles className="w-6 h-6" />
             <span className="text-xs">Wrapped</span>

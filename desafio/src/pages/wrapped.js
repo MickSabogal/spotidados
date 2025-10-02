@@ -56,12 +56,12 @@ export default function EstatisticasPage() {
 
                 {/* Botones Top 100 */}
                 <div className="mt-12 flex flex-col gap-6">
-                    <Link href="/Top100a">
+                    <Link href="/top100ArtistsPage">
                         <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
                             Top 100 Artists
                         </button>
                     </Link>
-                    <Link href="/Top100Songs">
+                    <Link href="/top100SongsPage">
                         <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
                             Top 100 Songs
                         </button>
