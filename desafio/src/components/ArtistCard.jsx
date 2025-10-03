@@ -1,11 +1,11 @@
 // components/ArtistCard.jsx
 import { useState, useEffect, useMemo } from "react";
-import dadosHistory from "../data/history.json";
+import { fetchHistory } from "../utils/fetchHistory";
 
-function obterDadosArtista(nomeArtista) {
-  if (!dadosHistory) return null;
+function obterDadosArtista(nomeArtista, history) {
+  if (!history) return null;
 
-  const musicasArtista = dadosHistory.filter(
+  const musicasArtista = history.filter(
     (m) => m.master_metadata_album_artist_name === nomeArtista
   );
 
@@ -15,16 +15,18 @@ function obterDadosArtista(nomeArtista) {
   const musicasUnicas = new Set(
     musicasArtista.map((m) => m.master_metadata_track_name).filter(Boolean)
   );
-  const msArtista = musicasArtista.reduce((acc, m) => acc + (m.ms_played || 0), 0);
+  const msArtista = musicasArtista.reduce((acc, m) => acc + (Number(m.ms_played) || 0), 0);
   const minutosArtista = Math.floor(msArtista / 60000);
 
-  const contagemEstacoes = { Winter: 0, Spring: 0, Summer: 0, Autumn: 0 };
+  const contagemEstacoes = { Inverno: 0, Primavera: 0, Verão: 0, Outono: 0 };
   musicasArtista.forEach((m) => {
-    const mes = new Date(m.ts).getMonth();
-    if ([11, 0, 1].includes(mes)) contagemEstacoes.Winter += 1;
-    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Spring += 1;
-    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Summer += 1;
-    else contagemEstacoes.Autumn += 1;
+    const t = new Date(m.ts);
+    const mes = isNaN(t.getTime()) ? null : t.getMonth();
+    if (mes === null) return;
+    if ([11, 0, 1].includes(mes)) contagemEstacoes.Inverno += 1;
+    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Primavera += 1;
+    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Verão += 1;
+    else contagemEstacoes.Outono += 1;
   });
   const estacaoFavorita = Object.entries(contagemEstacoes).reduce((a, b) =>
     b[1] > a[1] ? b : a
@@ -33,7 +35,7 @@ function obterDadosArtista(nomeArtista) {
   const contagemMusicas = {};
   musicasArtista.forEach((m) => {
     const track = m.master_metadata_track_name;
-    if (track) contagemMusicas[track] = (contagemMusicas[track] || 0) + (m.ms_played || 0);
+    if (track) contagemMusicas[track] = (contagemMusicas[track] || 0) + (Number(m.ms_played) || 0);
   });
 
   const top20 = Object.entries(contagemMusicas)
@@ -42,7 +44,7 @@ function obterDadosArtista(nomeArtista) {
     .map(([title, ms]) => ({ title, ms }));
 
   const contagemArtistas = {};
-  dadosHistory.forEach((musica) => {
+  history.forEach((musica) => {
     const artista = musica.master_metadata_album_artist_name;
     if (artista) contagemArtistas[artista] = (contagemArtistas[artista] || 0) + 1;
   });
@@ -64,15 +66,44 @@ function obterDadosArtista(nomeArtista) {
   };
 }
 
-export default function ArtistCard({ artistName, totalPlays }) {
+export default function ArtistCard({ artistName, totalPlays, historyProp = null }) {
   const [stats, setStats] = useState(null);
-  const [filterRange, setFilterRange] = useState("all"); // filter for top 20
+  const [filterRange, setFilterRange] = useState("all"); // filtro do top 20
+  const [historyData, setHistoryData] = useState(historyProp);
+
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+    if (historyProp) return;
+    if (historyData) return;
+
+    (async () => {
+      try {
+        const json = await fetchHistory({ signal: controller.signal });
+        if (!mounted || controller.signal.aborted) return;
+        setHistoryData(json);
+      } catch (e) {
+        if (e && e.name === "AbortError") {
+          console.debug("ArtistCard fetch aborted");
+          return;
+        }
+        console.error("Erro ao buscar history.json em ArtistCard:", e);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, [historyProp, historyData]);
 
   useEffect(() => {
     if (!artistName) return;
-    const data = obterDadosArtista(artistName);
+    const history = historyProp || historyData;
+    if (!history) return;
+    const data = obterDadosArtista(artistName, history);
     setStats(data);
-  }, [artistName]);
+  }, [artistName, historyData, historyProp]);
 
   const fmt = (n) => n?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
 
@@ -84,9 +115,14 @@ export default function ArtistCard({ artistName, totalPlays }) {
   const filteredTop20 = useMemo(() => {
     if (!stats?.todasMusicas || stats.todasMusicas.length === 0) return [];
 
-    const mostRecentDate = Math.max(...stats.todasMusicas.map((m) => new Date(m.ts).getTime()));
-    let startTime = 0;
+    const mostRecentDate = Math.max(
+      ...stats.todasMusicas.map((m) => {
+        const t = new Date(m.ts).getTime();
+        return Number.isNaN(t) ? 0 : t;
+      })
+    );
 
+    let startTime = 0;
     switch (filterRange) {
       case "4w":
         startTime = mostRecentDate - 4 * 7 * 24 * 60 * 60 * 1000;
@@ -105,10 +141,10 @@ export default function ArtistCard({ artistName, totalPlays }) {
     const contagem = {};
     stats.todasMusicas.forEach((m) => {
       const ts = new Date(m.ts).getTime();
-      if (ts < startTime) return;
+      if (Number.isNaN(ts) || ts < startTime) return;
       const track = m.master_metadata_track_name;
       if (!track) return;
-      contagem[track] = (contagem[track] || 0) + (m.ms_played || 0);
+      contagem[track] = (contagem[track] || 0) + (Number(m.ms_played) || 0);
     });
 
     return Object.entries(contagem)
@@ -120,7 +156,7 @@ export default function ArtistCard({ artistName, totalPlays }) {
   if (!stats) {
     return (
       <div className="min-h-[300px] flex items-center justify-center text-gray-400">
-        Loading...
+        Carregando...
       </div>
     );
   }
@@ -130,47 +166,47 @@ export default function ArtistCard({ artistName, totalPlays }) {
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">You listened to this artist</p>
-          <p className="text-white text-3xl font-bold">{fmt(stats.artistPlays)} times</p>
+          <p className="text-gray-400 text-sm mb-2">Ouviste este artista</p>
+          <p className="text-white text-3xl font-bold">{fmt(stats.artistPlays)} vezes</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">% of plays (from total)</p>
+          <p className="text-gray-400 text-sm mb-2">% das plays (do total)</p>
           <p className="text-[#1DB954] font-bold text-2xl">{percentArtist}%</p>
-          <p className="text-gray-500 text-xs mt-1">of total plays</p>
+          <p className="text-gray-500 text-xs mt-1">do total de plays</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Total plays</p>
+          <p className="text-gray-400 text-sm mb-2">Plays no total</p>
           <p className="text-white text-2xl font-bold">{fmt(totalPlays)}</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Unique songs listened</p>
+          <p className="text-gray-400 text-sm mb-2">Músicas diferentes ouvidas</p>
           <p className="text-white text-2xl font-bold">{fmt(stats.uniqueTracks)}</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Total listening time</p>
+          <p className="text-gray-400 text-sm mb-2">Minutos totais a ouvir</p>
           <p className="text-white text-2xl font-bold">{fmt(stats.passastes)} min</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Position in top 100</p>
+          <p className="text-gray-400 text-sm mb-2">Posição no top 100</p>
           <p className="text-[#1DB954] font-bold text-2xl">{stats.position100 ? `#${stats.position100}` : "N/A"}</p>
-          <p className="text-gray-500 text-xs mt-1">all time</p>
+          <p className="text-gray-500 text-xs mt-1">desde sempre</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">When you listen the most</p>
+          <p className="text-gray-400 text-sm mb-2">Quando ouves mais</p>
           <p className="text-[#1DB954] font-bold text-2xl">{stats.favoriteSeason}</p>
-          <p className="text-gray-500 text-xs mt-1">season</p>
+          <p className="text-gray-500 text-xs mt-1">estação do ano</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Average per song</p>
+          <p className="text-gray-400 text-sm mb-2">Média por música</p>
           <p className="text-white text-lg">{stats.uniqueTracks > 0 ? Math.round(stats.artistPlays / stats.uniqueTracks) : 0}x</p>
-          <p className="text-gray-500 text-xs mt-1">each song</p>
+          <p className="text-gray-500 text-xs mt-1">cada música</p>
         </div>
       </div>
 
@@ -183,7 +219,7 @@ export default function ArtistCard({ artistName, totalPlays }) {
               { label: "4 weeks", value: "4w" },
               { label: "6 months", value: "6m" },
               { label: "1 year", value: "1y" },
-              { label: "All time", value: "all" },
+              { label: "Always", value: "all" },
             ].map((f) => (
               <button
                 key={f.value}
@@ -198,7 +234,7 @@ export default function ArtistCard({ artistName, totalPlays }) {
         </div>
         <div className="max-h-56 overflow-auto pr-2">
           {filteredTop20.length === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-4">No songs in this period</p>
+            <p className="text-gray-400 text-sm text-center py-4">Nenhuma música neste período</p>
           ) : (
             <ol className="space-y-2">
               {filteredTop20.map((t, i) => (

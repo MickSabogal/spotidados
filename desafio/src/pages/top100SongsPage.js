@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import dadosHistory from "../data/history.json";
-import Top100SongsComponent from '../components/Top100SongsComponent';
+import { useState, useEffect } from "react";
+import Top100SongsComponent from "../components/Top100SongsComponent";
+import { fetchHistory } from "../utils/fetchHistory";
 
 export default function Top100SongsPage() {
   const [activeFilter, setActiveFilter] = useState("alltime");
@@ -9,19 +9,24 @@ export default function Top100SongsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const processHistory = () => {
-      setIsLoading(true);
+    let mounted = true;
+    const controller = new AbortController();
 
+    async function processHistory() {
+      setIsLoading(true);
       try {
+        const dadosHistory = await fetchHistory({ signal: controller.signal });
+
+        if (!mounted || controller.signal.aborted) return;
+
         let mostRecentDate = 0;
         for (let i = 0; i < dadosHistory.length; i++) {
           const entryTime = new Date(dadosHistory[i].ts).getTime();
-          if (entryTime > mostRecentDate) mostRecentDate = entryTime;
+          if (!isNaN(entryTime) && entryTime > mostRecentDate) mostRecentDate = entryTime;
         }
-
         const referenceDate = mostRecentDate || Date.now();
-        let startTimestamp;
 
+        let startTimestamp;
         switch (activeFilter) {
           case "month":
             startTimestamp = referenceDate - 30 * 24 * 60 * 60 * 1000;
@@ -65,24 +70,31 @@ export default function Top100SongsPage() {
         songsArray.sort((a, b) => b.count - a.count);
         const top100 = songsArray.slice(0, 100);
 
+        if (!mounted) return;
         setTopSongs(top100);
-
         if (minDate !== Infinity && maxDate !== -Infinity) {
           setDateRange({ start: new Date(minDate), end: new Date(maxDate) });
         } else {
           setDateRange({ start: null, end: null });
         }
-
       } catch (error) {
-        console.error("Erro ao processar histórico:", error);
-        setTopSongs([]);
-        setDateRange({ start: null, end: null });
+        // ignora abort
+        if (error.name === "AbortError") return;
+        console.error("Erro ao processar histórico (songs):", error);
+        if (mounted) {
+          setTopSongs([]);
+          setDateRange({ start: null, end: null });
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) setIsLoading(false);
       }
-    };
+    }
 
     processHistory();
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [activeFilter]);
 
   return (

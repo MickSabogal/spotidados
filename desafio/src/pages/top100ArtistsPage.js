@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import dadosHistory from "../data/history.json";
-import Top100ArtistsComponent from '../components/Top100ArtistsComponent';
+import { useState, useEffect } from "react";
+import Top100ArtistsComponent from "../components/Top100ArtistsComponent";
+import { fetchHistory } from "../utils/fetchHistory";
 
 export default function Top100ArtistsPage() {
   const [activeFilter, setActiveFilter] = useState("alltime");
@@ -9,27 +9,34 @@ export default function Top100ArtistsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const processHistory = () => {
+    let mounted = true;
+    const controller = new AbortController();
+
+    async function processHistory() {
       setIsLoading(true);
       try {
+        const dadosHistory = await fetchHistory({ signal: controller.signal });
+
+        if (!mounted || controller.signal.aborted) return;
+
+        // encontra data mais recente
         let mostRecentDate = 0;
-        dadosHistory.forEach(entry => {
-          const entryTime = new Date(entry.ts).getTime();
-          if (entryTime > mostRecentDate) mostRecentDate = entryTime;
+        dadosHistory.forEach((entry) => {
+          const t = new Date(entry.ts).getTime();
+          if (!isNaN(t) && t > mostRecentDate) mostRecentDate = t;
         });
-
         const referenceDate = mostRecentDate || Date.now();
-        let startTimestamp;
 
+        let startTimestamp;
         switch (activeFilter) {
           case "month":
-            startTimestamp = referenceDate - (30 * 24 * 60 * 60 * 1000);
+            startTimestamp = referenceDate - 30 * 24 * 60 * 60 * 1000;
             break;
           case "6months":
-            startTimestamp = referenceDate - (6 * 30 * 24 * 60 * 60 * 1000);
+            startTimestamp = referenceDate - 6 * 30 * 24 * 60 * 60 * 1000;
             break;
           case "1year":
-            startTimestamp = referenceDate - (365 * 24 * 60 * 60 * 1000);
+            startTimestamp = referenceDate - 365 * 24 * 60 * 60 * 1000;
             break;
           case "alltime":
           default:
@@ -40,7 +47,7 @@ export default function Top100ArtistsPage() {
         let minDate = Infinity;
         let maxDate = -Infinity;
 
-        dadosHistory.forEach(entry => {
+        dadosHistory.forEach((entry) => {
           const entryTime = new Date(entry.ts).getTime();
           if (isNaN(entryTime) || entryTime < startTimestamp) return;
 
@@ -56,25 +63,37 @@ export default function Top100ArtistsPage() {
         });
 
         const artistsArray = Object.values(artistCounts).sort((a, b) => b.count - a.count);
+        if (!mounted) return;
         setTopArtists(artistsArray.slice(0, 100));
-
         setDateRange({
           start: minDate !== Infinity ? new Date(minDate) : null,
-          end: maxDate !== -Infinity ? new Date(maxDate) : null
+          end: maxDate !== -Infinity ? new Date(maxDate) : null,
         });
       } catch (error) {
-        console.error(error);
-        setTopArtists([]);
-        setDateRange({ start: null, end: null });
+        if (error.name === "AbortError") {
+          // esperado em navegação/HMR/StrictMode — ignorar silenciosamente
+          console.debug("top100ArtistsPage fetch aborted");
+          return;
+        }
+        console.error("Erro ao carregar/processar history (artists):", error);
+        if (mounted) {
+          setTopArtists([]);
+          setDateRange({ start: null, end: null });
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) setIsLoading(false);
       }
-    };
+    }
 
     processHistory();
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [activeFilter]);
 
-  const formatDate = (date) => date ? date.toLocaleDateString('pt-PT', { year: 'numeric', month: 'short', day: 'numeric' }) : "";
+  const formatDate = (date) =>
+    date ? date.toLocaleDateString("pt-PT", { year: "numeric", month: "short", day: "numeric" }) : "";
   const formatTime = (ms) => {
     const hours = Math.floor(ms / (1000 * 60 * 60));
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));

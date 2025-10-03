@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ArtistCard from "@/components/ArtistCard";
 import BottomNav from "@/components/BottomNav";
-import dadosHistory from "../data/history.json";
+import { fetchHistory } from "../utils/fetchHistory";
 import Image from "next/image";
 
 export default function ArtistPage() {
@@ -28,9 +28,25 @@ export default function ArtistPage() {
 
   // Calcula plays totais do histórico
   useEffect(() => {
-    if (Array.isArray(dadosHistory)) {
-      setTotalPlays(dadosHistory.length);
-    }
+    let mounted = true;
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        const json = await fetchHistory({ signal: controller.signal });
+        if (!mounted || controller.signal.aborted) return;
+        setTotalPlays(Array.isArray(json) ? json.length : 0);
+      } catch (e) {
+        if (e && e.name === "AbortError") return; // ignora abort
+        console.error("Erro ao carregar history.json em artist.js:", e);
+        if (mounted) setTotalPlays(0);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, []);
 
   if (!artistName) {

@@ -1,61 +1,130 @@
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
+import { fetchHistory } from "../utils/fetchHistory";
 import {
-    totalMusicasTocadas,
-    totalMusicasDiferentes,
-    totalMinutosOuvidos,
-    mediaDiariaOuvida,
-    estacaoMaisOuvida,
-    horaMaisOuvida,
-    encontrarArtistaMaisOuvido,
-    obterPrimeiraMusica
+  totalMusicasTocadas,
+  totalMusicasDiferentes,
+  totalMinutosOuvidos,
+  mediaDiariaOuvida,
+  estacaoMaisOuvida,
+  horaMaisOuvida,
+  encontrarArtistaMaisOuvido,
+  obterPrimeiraMusica,
 } from "../utils/dataProcessing";
 
 // Componente para cada estadística en cuadrado
 function StatCard({ title, value, isHighlight }) {
-    return (
-        <div className="bg-zinc-900 rounded-2xl p-6 flex flex-col justify-center text-left shadow-lg">
-            <span className="text-xs text-gray-400 mb-2">{title}</span>
-            <span className={`text-3xl font-bold ${isHighlight ? 'text-green-500' : 'text-white'}`}>
-                {value}
-            </span>
-        </div>
-    );
+  return (
+    <div className="bg-zinc-900 rounded-2xl p-6 flex flex-col justify-center text-left shadow-lg">
+      <span className="text-xs text-gray-400 mb-2">{title}</span>
+      <span className={`text-3xl font-bold ${isHighlight ? "text-green-500" : "text-white"}`}>
+        {value}
+      </span>
+    </div>
+  );
 }
 
 export default function EstatisticasPage() {
-    return (
-        <div className="min-h-screen bg-black text-white flex justify-center">
-            <div className="w-full max-w-md pb-24">
-                {/* SearchBar Component */}
-                <SearchBar />
+  const [stats, setStats] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-                {/* Estadísticas en cuadrados */}
-                <div className="grid grid-cols-2 gap-4 mt-6 px-4">
-                    <StatCard title="Played Music" value={totalMusicasTocadas()} />
-                    <StatCard title="Different Music" value={totalMusicasDiferentes()} />
-                    <StatCard title="Minutes Listened" value={totalMinutosOuvidos()} />
-                    <StatCard title="Daily Average" value={`${mediaDiariaOuvida()} min`} />
-                    <StatCard title="Favorite Season" value={estacaoMaisOuvida()} isHighlight />
-                    <StatCard title="Preferred Time" value={horaMaisOuvida()} />
-                    <StatCard title="Most Listened Artist" value={encontrarArtistaMaisOuvido()} />
-                    <StatCard title="First Music Played" value={obterPrimeiraMusica()} />
-                </div>
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
 
-                {/* Botones Top 100 */}
-                <div className="mt-12 flex flex-col gap-6 px-4">
-                    <Link href="/top100ArtistsPage">
-                        <button className="w-full rounded-2xl bg-gradient-to-br from-green-400 via-green-500 to-green-700 p-4 cursor-pointer transition-all duration-300 hover:brightness-110 text-black">
-                            Top 100 Artists
-                        </button>
-                    </Link>
-                    <Link href="/top100SongsPage">
-                        <button className="w-full rounded-2xl bg-gradient-to-br from-green-400 via-green-500 to-green-700 p-4 cursor-pointer transition-all duration-300 hover:brightness-110 text-black">
-                            Top 100 Songs
-                        </button>
-                    </Link>
-                </div>
-            </div>
+    async function load() {
+      try {
+        setIsLoading(true);
+        const dadosHistory = await fetchHistory({ signal: controller.signal });
+        if (!mounted || controller.signal.aborted) return;
+
+        const totalPlays = totalMusicasTocadas(dadosHistory);
+        const uniqueTracks = totalMusicasDiferentes(dadosHistory);
+        const totalMs = dadosHistory.reduce((s, d) => s + (Number(d.ms_played) || 0), 0);
+        const totalMinutes = Math.floor(totalMs / 60000);
+        const dailyAverage = mediaDiariaOuvida(dadosHistory);
+        const favoriteSeason = estacaoMaisOuvida(dadosHistory);
+        const hours = {};
+        dadosHistory.forEach((d) => {
+          const t = new Date(d.ts);
+          if (isNaN(t.getTime())) return;
+          const h = t.getHours();
+          hours[h] = (hours[h] || 0) + 1;
+        });
+        const preferredHour = Object.entries(hours).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+        const preferredTimeLabel = preferredHour !== null ? `${preferredHour}:00` : "N/A";
+        const mostListenedArtist = encontrarArtistaMaisOuvido(dadosHistory);
+        const sortedByTs = dadosHistory
+          .map((d) => ({ ...d, _ts: new Date(d.ts).getTime() }))
+          .filter((d) => !isNaN(d._ts))
+          .sort((a, b) => a._ts - b._ts);
+        const firstMusic = sortedByTs[0]?.master_metadata_track_name || "N/A";
+
+        if (!mounted) return;
+        setStats({
+          totalPlays,
+          uniqueTracks,
+          totalMinutes,
+          dailyAverage,
+          favoriteSeason,
+          preferredTimeLabel,
+          mostListenedArtist,
+          firstMusic,
+        });
+      } catch (e) {
+        if (e && e.name === "AbortError") {
+          console.debug("wrapped fetch aborted");
+          return;
+        }
+        console.error("Erro ao carregar stats em wrapped:", e);
+        if (mounted) setStats(null);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-black text-white flex justify-center">
+      <div className="w-full max-w-md pb-24 px-4">
+        <div className="flex items-center gap-3 my-4">
+          <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden relative">
+            <Image src="/cb.jpg" alt="Profile" fill className="object-cover" />
+          </div>
+          <div className="flex-1 bg-gradient-to-r from-[#6BCA6F] to-[#000000] rounded-full px-4 py-2 flex items-center gap-2">
+            <span>🔍</span>
+            <input type="text" placeholder="Song, album, artist, etc" className="bg-transparent outline-none flex-1 text-white placeholder-white" />
+          </div>
         </div>
-    );
+
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          <StatCard title="Played Music" value={isLoading ? "..." : stats?.totalPlays ?? "0"} />
+          <StatCard title="Different Music" value={isLoading ? "..." : stats?.uniqueTracks ?? "0"} />
+          <StatCard title="Minutes Listened" value={isLoading ? "..." : stats?.totalMinutes ?? "0"} />
+          <StatCard title="Daily Average" value={isLoading ? "..." : `${stats?.dailyAverage ?? 0} min`} />
+          <StatCard title="Favorite Season" value={isLoading ? "..." : stats?.favoriteSeason ?? "N/A"} isHighlight />
+          <StatCard title="Preferred Time" value={isLoading ? "..." : stats?.preferredTimeLabel ?? "N/A"} />
+          <StatCard title="Most Listened Artist" value={isLoading ? "..." : stats?.mostListenedArtist ?? "N/A"} />
+          <StatCard title="First Music Played" value={isLoading ? "..." : stats?.firstMusic ?? "N/A"} />
+        </div>
+
+        <div className="mt-12 flex flex-col gap-6">
+          <Link href="/top100ArtistsPage">
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">Top 100 Artists</button>
+          </Link>
+          <Link href="/top100SongsPage">
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">Top 100 Songs</button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }

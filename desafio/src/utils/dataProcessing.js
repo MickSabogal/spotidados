@@ -1,132 +1,101 @@
-import dadosHistory from "../data/history.json";
+// removed static import of history.json — functions now recebem `history` como parâmetro
 
-export function contarTotalMusicas() {
-  if (!dadosHistory || dadosHistory.length === 0) {
-    return 0;
-  }
-  return dadosHistory.length;
+export function contarTotalMusicas(history = []) {
+  if (!history || history.length === 0) return 0;
+  return history.length;
 }
 
-export function obterPrimeiraMusica() {
-  if (!dadosHistory || dadosHistory.length === 0) {
-    return "Nenhuma música encontrada";
-  }
-  return dadosHistory[0]?.master_metadata_track_name || "Música desconhecida";
+export function obterPrimeiraMusica(history = []) {
+  if (!history || history.length === 0) return "Nenhuma música encontrada";
+  return history[0]?.master_metadata_track_name || "Música desconhecida";
 }
 
-export function encontrarArtistaMaisOuvido() {
-  if (!dadosHistory || dadosHistory.length === 0) {
-    return "Nenhum artista encontrado";
-  }
+export function encontrarArtistaMaisOuvido(history = []) {
+  if (!history || history.length === 0) return "Nenhum artista encontrado";
   const contagemArtistas = {};
-
-  dadosHistory.forEach((musica) => {
+  history.forEach((musica) => {
     const artista = musica.master_metadata_album_artist_name;
-    if (artista) {
-      contagemArtistas[artista] = (contagemArtistas[artista] || 0) + 1;
-    }
+    if (artista) contagemArtistas[artista] = (contagemArtistas[artista] || 0) + 1;
   });
-
   let artistaMaisOuvido = "Nenhum artista encontrado";
   let maiorContagem = 0;
-
   for (const artista in contagemArtistas) {
     if (contagemArtistas[artista] > maiorContagem) {
       maiorContagem = contagemArtistas[artista];
       artistaMaisOuvido = artista;
     }
   }
-
   return artistaMaisOuvido;
 }
 
-export function encontrarTop100Artistas() {
-  if (!dadosHistory || dadosHistory.length === 0) {
-    return ["Nenhum artista encontrado"];
-  }
-
+export function encontrarTop100Artistas(history = []) {
+  if (!history || history.length === 0) return ["Nenhum artista encontrado"];
   const contagemArtistas = {};
-
-  dadosHistory.forEach((musica) => {
+  history.forEach((musica) => {
     const artista = musica.master_metadata_album_artist_name;
-    if (artista) {
-      contagemArtistas[artista] = (contagemArtistas[artista] || 0) + 1;
-    }
+    if (artista) contagemArtistas[artista] = (contagemArtistas[artista] || 0) + 1;
   });
-
   const listaOrdenada = Object.entries(contagemArtistas)
-    .sort((a, b) => b[1] - a[1]) // mais ouvidos primeiro
-    .slice(0, 100); // só os 100
-
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 100);
   return listaOrdenada.map(([artista]) => artista);
 }
 
-export function encontrarTop100Musicas() {
-  if (!dadosHistory || dadosHistory.length === 0) {
-    return ["Nenhuma música encontrada"];
-  }
-
+export function encontrarTop100Musicas(history = []) {
+  if (!history || history.length === 0) return ["Nenhuma música encontrada"];
   const contagemMusicas = {};
-
-  dadosHistory.forEach((musica) => {
+  history.forEach((musica) => {
     const track = musica.master_metadata_track_name;
-    if (track) {
-      contagemMusicas[track] = (contagemMusicas[track] || 0) + 1;
-    }
+    if (track) contagemMusicas[track] = (contagemMusicas[track] || 0) + 1;
   });
-
   const listaOrdenada = Object.entries(contagemMusicas)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 100);
-
   return listaOrdenada.map(([track]) => track);
 }
 
-// Total de músicas tocadas (contando repetições)
-export function totalMusicasTocadas() {
-  if (!dadosHistory) return 0;
-  return dadosHistory.length;
+export function totalMusicasTocadas(history = []) {
+  if (!history) return 0;
+  return history.length;
 }
 
-// Total de músicas diferentes
-export function totalMusicasDiferentes() {
-  if (!dadosHistory) return 0;
+export function totalMusicasDiferentes(history = []) {
+  if (!history) return 0;
   const musicasUnicas = new Set(
-    dadosHistory.map((m) => m.master_metadata_track_name).filter(Boolean)
+    history.map((m) => m.master_metadata_track_name).filter(Boolean)
   );
   return musicasUnicas.size;
 }
 
-// Total de minutos ouvidos
-export function totalMinutosOuvidos() {
-  if (!dadosHistory) return 0;
-  const msTotais = dadosHistory.reduce((acc, m) => acc + (m.ms_played || 0), 0);
-  return Math.floor(msTotais / 60000); // converte ms para minutos
+export function totalMinutosOuvidos(history = []) {
+  if (!history) return 0;
+  const msTotais = history.reduce((acc, m) => acc + (Number(m.ms_played) || 0), 0);
+  return Math.floor(msTotais / 60000);
 }
 
-// Média de tempo diário de escuta
-export function mediaDiariaOuvida() {
-  if (!dadosHistory) return 0;
-
+export function mediaDiariaOuvida(history = []) {
+  if (!history || history.length === 0) return 0;
   const dias = new Set(
-    dadosHistory.map((m) => new Date(m.ts).toISOString().slice(0, 10))
+    history
+      .map((m) => {
+        const d = new Date(m.ts);
+        return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
+      })
+      .filter(Boolean)
   );
-
-  const totalMinutos = totalMinutosOuvidos();
-  return (totalMinutos / dias.size).toFixed(1); // minutos/dia
+  const totalMinutos = totalMinutosOuvidos(history);
+  return dias.size > 0 ? (totalMinutos / dias.size).toFixed(1) : 0;
 }
 
-// Hora do dia em que mais ouve música
-export function horaMaisOuvida() {
-  if (!dadosHistory) return "N/A";
-
+export function horaMaisOuvida(history = []) {
+  if (!history || history.length === 0) return "N/A";
   const contagemHoras = {};
-
-  dadosHistory.forEach((m) => {
-    const hora = new Date(m.ts).getHours();
+  history.forEach((m) => {
+    const d = new Date(m.ts);
+    if (isNaN(d.getTime())) return;
+    const hora = d.getHours();
     contagemHoras[hora] = (contagemHoras[hora] || 0) + 1;
   });
-
   const horaMax = Object.entries(contagemHoras).reduce(
     (a, b) => (b[1] > a[1] ? b : a),
     [0, 0]
@@ -134,24 +103,19 @@ export function horaMaisOuvida() {
   return `${horaMax}:00`;
 }
 
-// Estação do ano em que mais ouve música
-export function estacaoMaisOuvida() {
-  if (!dadosHistory) return "N/A";
-
-  const contagemEstacoes = { Winter: 0, Spring: 0, Summer: 0, Autumn: 0 };
-
-  dadosHistory.forEach((m) => {
-    const mes = new Date(m.ts).getMonth(); // 0 = Janeiro, 11 = Dezembro
-    if ([11, 0, 1].includes(mes)) contagemEstacoes.Winter += 1;
-    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Spring += 1;
-    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Summer += 1;
-    else contagemEstacoes.Autumn += 1;
+export function estacaoMaisOuvida(history = []) {
+  if (!history || history.length === 0) return "N/A";
+  const contagemEstacoes = { Inverno: 0, Primavera: 0, Verão: 0, Outono: 0 };
+  history.forEach((m) => {
+    const d = new Date(m.ts);
+    if (isNaN(d.getTime())) return;
+    const mes = d.getMonth();
+    if ([11, 0, 1].includes(mes)) contagemEstacoes.Inverno += 1;
+    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Primavera += 1;
+    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Verão += 1;
+    else contagemEstacoes.Outono += 1;
   });
-
-  // Retorna a estação com maior contagem
-  return Object.entries(contagemEstacoes).reduce((a, b) =>
-    b[1] > a[1] ? b : a
-  )[0];
+  return Object.entries(contagemEstacoes).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
 }
 
 export function filterHistoryByPeriod(history = [], period = "alltime") {
@@ -190,9 +154,9 @@ export function topSongsFromHistory(history = [], opts = {}) {
     const artist = entry.master_metadata_album_artist_name;
     if (!track || !artist) return;
     const key = `${artist} - ${track}`;
-    if (!map[key]) map[key] = { song: key, count: 0, ms: 0 };
+    if (!map[key]) map[key] = { song: key, count: 0, ms: 0, artist };
     map[key].count += 1;
-    map[key].ms += entry.ms_played || 0;
+    map[key].ms += Number(entry.ms_played) || 0;
   });
   const arr = Object.values(map);
   if (by === "ms") arr.sort((a, b) => b.ms - a.ms);
