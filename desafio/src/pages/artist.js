@@ -36,7 +36,7 @@ export default function ArtistPage() {
   if (!artistName) {
     return (
       <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center text-gray-400">
-        Carregando...
+        Loading...
       </div>
     );
   }

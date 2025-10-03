@@ -122,7 +122,7 @@ export default function MainPage() {
         {/* Botón para ver todos los artistas */}
         <div className="px-4 mt-4 mb-20">
           <Link href="/top100SongsPage">
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
+            <button className="w-full relative rounded-2xl overflow-hidden bg-gradient-to-br from-green-400 via-green-500 to-green-700 p-4 cursor-pointer transition-all duration-300 hover:brightness-110 text-black">
               See the most played songs
             </button>
           </Link>

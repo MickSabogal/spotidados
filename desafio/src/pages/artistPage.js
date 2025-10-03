@@ -18,13 +18,13 @@ function obterDadosArtista(nomeArtista) {
   const msArtista = musicasArtista.reduce((acc, m) => acc + (m.ms_played || 0), 0);
   const minutosArtista = Math.floor(msArtista / 60000);
 
-  const contagemEstacoes = { Inverno: 0, Primavera: 0, Verão: 0, Outono: 0 };
+  const contagemEstacoes = { Winter: 0, Spring: 0, Summer: 0, Autumn: 0 };
   musicasArtista.forEach((m) => {
     const mes = new Date(m.ts).getMonth();
-    if ([11, 0, 1].includes(mes)) contagemEstacoes.Inverno += 1;
-    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Primavera += 1;
-    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Verão += 1;
-    else contagemEstacoes.Outono += 1;
+    if ([11, 0, 1].includes(mes)) contagemEstacoes.Winter += 1;
+    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Spring += 1;
+    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Summer += 1;
+    else contagemEstacoes.Autumn += 1;
   });
   const estacaoFavorita = Object.entries(contagemEstacoes).reduce((a, b) =>
     b[1] > a[1] ? b : a
