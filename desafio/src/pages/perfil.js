@@ -26,10 +26,10 @@ const TEAM = [
   },
   {
     name: "Miguel Sabogal",
-    github: "https://github.com/miguelsabogal",
-    linkedin: "https://www.linkedin.com/in/",
-    email: "miguel@example.com",
-    image: "/cb.jpg",
+    github: "https://github.com/MickSabogal",
+    linkedin: "https://www.linkedin.com/in/miguel-alejandro-sabogal-guzman/",
+    email: "miguelsabogal20@gmail.com",
+    image: "/unnamed.jpg",
   },
 ];
 
