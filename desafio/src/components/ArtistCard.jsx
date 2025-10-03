@@ -18,15 +18,15 @@ function obterDadosArtista(nomeArtista, history) {
   const msArtista = musicasArtista.reduce((acc, m) => acc + (Number(m.ms_played) || 0), 0);
   const minutosArtista = Math.floor(msArtista / 60000);
 
-  const contagemEstacoes = { Inverno: 0, Primavera: 0, Verão: 0, Outono: 0 };
+  const contagemEstacoes = { Winter: 0, Spring: 0, Summer: 0, Autumn: 0 };
   musicasArtista.forEach((m) => {
     const t = new Date(m.ts);
     const mes = isNaN(t.getTime()) ? null : t.getMonth();
     if (mes === null) return;
-    if ([11, 0, 1].includes(mes)) contagemEstacoes.Inverno += 1;
-    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Primavera += 1;
-    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Verão += 1;
-    else contagemEstacoes.Outono += 1;
+    if ([11, 0, 1].includes(mes)) contagemEstacoes.Winter += 1;
+    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Spring += 1;
+    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Summer += 1;
+    else contagemEstacoes.Autumn += 1;
   });
   const estacaoFavorita = Object.entries(contagemEstacoes).reduce((a, b) =>
     b[1] > a[1] ? b : a
@@ -156,7 +156,7 @@ export default function ArtistCard({ artistName, totalPlays, historyProp = null 
   if (!stats) {
     return (
       <div className="min-h-[300px] flex items-center justify-center text-gray-400">
-        Carregando...
+        Loading...
       </div>
     );
   }
@@ -166,47 +166,47 @@ export default function ArtistCard({ artistName, totalPlays, historyProp = null 
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Ouviste este artista</p>
-          <p className="text-white text-3xl font-bold">{fmt(stats.artistPlays)} vezes</p>
+          <p className="text-gray-400 text-sm mb-2">You listened to this artist</p>
+          <p className="text-white text-3xl font-bold">{fmt(stats.artistPlays)} times</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">% das plays (do total)</p>
+          <p className="text-gray-400 text-sm mb-2">% of total plays</p>
           <p className="text-[#1DB954] font-bold text-2xl">{percentArtist}%</p>
-          <p className="text-gray-500 text-xs mt-1">do total de plays</p>
+          <p className="text-gray-500 text-xs mt-1">of all plays</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Plays no total</p>
+          <p className="text-gray-400 text-sm mb-2">Total plays</p>
           <p className="text-white text-2xl font-bold">{fmt(totalPlays)}</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Músicas diferentes ouvidas</p>
+          <p className="text-gray-400 text-sm mb-2">Unique songs listened</p>
           <p className="text-white text-2xl font-bold">{fmt(stats.uniqueTracks)}</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Minutos totais a ouvir</p>
+          <p className="text-gray-400 text-sm mb-2">Total minutes listened</p>
           <p className="text-white text-2xl font-bold">{fmt(stats.passastes)} min</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Posição no top 100</p>
+          <p className="text-gray-400 text-sm mb-2">Top 100 position</p>
           <p className="text-[#1DB954] font-bold text-2xl">{stats.position100 ? `#${stats.position100}` : "N/A"}</p>
-          <p className="text-gray-500 text-xs mt-1">desde sempre</p>
+          <p className="text-gray-500 text-xs mt-1">all-time</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Quando ouves mais</p>
+          <p className="text-gray-400 text-sm mb-2">When you listen the most</p>
           <p className="text-[#1DB954] font-bold text-2xl">{stats.favoriteSeason}</p>
-          <p className="text-gray-500 text-xs mt-1">estação do ano</p>
+          <p className="text-gray-500 text-xs mt-1">season of the year</p>
         </div>
 
         <div className="rounded-xl bg-[#121212]/80 p-4 shadow-md">
-          <p className="text-gray-400 text-sm mb-2">Média por música</p>
+          <p className="text-gray-400 text-sm mb-2">Average per song</p>
           <p className="text-white text-lg">{stats.uniqueTracks > 0 ? Math.round(stats.artistPlays / stats.uniqueTracks) : 0}x</p>
-          <p className="text-gray-500 text-xs mt-1">cada música</p>
+          <p className="text-gray-500 text-xs mt-1">each song</p>
         </div>
       </div>
 
@@ -219,7 +219,7 @@ export default function ArtistCard({ artistName, totalPlays, historyProp = null 
               { label: "4 weeks", value: "4w" },
               { label: "6 months", value: "6m" },
               { label: "1 year", value: "1y" },
-              { label: "Always", value: "all" },
+              { label: "All time", value: "all" },
             ].map((f) => (
               <button
                 key={f.value}
@@ -234,7 +234,7 @@ export default function ArtistCard({ artistName, totalPlays, historyProp = null 
         </div>
         <div className="max-h-56 overflow-auto pr-2">
           {filteredTop20.length === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-4">Nenhuma música neste período</p>
+            <p className="text-gray-400 text-sm text-center py-4">No songs in this period</p>
           ) : (
             <ol className="space-y-2">
               {filteredTop20.map((t, i) => (

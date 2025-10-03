@@ -105,15 +105,15 @@ export function horaMaisOuvida(history = []) {
 
 export function estacaoMaisOuvida(history = []) {
   if (!history || history.length === 0) return "N/A";
-  const contagemEstacoes = { Inverno: 0, Primavera: 0, Verão: 0, Outono: 0 };
+  const contagemEstacoes = { Winter: 0, Spring: 0, Summer: 0, Autumn: 0 };
   history.forEach((m) => {
     const d = new Date(m.ts);
     if (isNaN(d.getTime())) return;
     const mes = d.getMonth();
-    if ([11, 0, 1].includes(mes)) contagemEstacoes.Inverno += 1;
-    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Primavera += 1;
-    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Verão += 1;
-    else contagemEstacoes.Outono += 1;
+    if ([11, 0, 1].includes(mes)) contagemEstacoes.Winter += 1;
+    else if ([2, 3, 4].includes(mes)) contagemEstacoes.Spring += 1;
+    else if ([5, 6, 7].includes(mes)) contagemEstacoes.Summer += 1;
+    else contagemEstacoes.Autumn += 1;
   });
   return Object.entries(contagemEstacoes).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
 }

@@ -51,7 +51,7 @@ export default function Perfil() {
         <header className="mt-6 mb-4">
           <h1 className="text-2xl font-bold">Meet our team</h1>
           <p className="text-sm text-gray-400 mt-1">
-            Conheça quem fez este projeto — links para GitHub, LinkedIn e email.
+            Team behind this project — links to GitHub, LinkedIn & email.
           </p>
         </header>
 
@@ -109,11 +109,6 @@ export default function Perfil() {
             </article>
           ))}
         </section>
-
-        <footer className="mt-6 text-center text-gray-500 text-xs">
-          Edite o array TEAM no topo deste ficheiro para alterar os links ou a
-          imagem.
-        </footer>
       </div>
     </div>
   );
