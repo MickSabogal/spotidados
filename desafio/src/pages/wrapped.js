@@ -118,13 +118,65 @@ export default function EstatisticasPage() {
 
         <div className="mt-12 flex flex-col gap-6">
           <Link href="/top100ArtistsPage">
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">Top 100 Artists</button>
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors relative overflow-hidden button-laser">
+              <span>Top 100 Artists</span>
+            </button>
           </Link>
           <Link href="/top100SongsPage">
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">Top 100 Songs</button>
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors relative overflow-hidden button-laser">
+              <span>Top 100 Songs</span>
+            </button>
           </Link>
         </div>
       </div>
+
+      {/* Scoped CSS for buttons */}
+      <style jsx>{`
+        .button-laser {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          z-index: 0;
+        }
+
+        .button-laser span {
+          position: relative;
+          z-index: 10;
+          display: block;
+        }
+
+        .button-laser::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+            120deg,
+            rgba(255, 0, 255, 0.2),
+            rgba(0, 255, 255, 0.2),
+            rgba(255, 255, 0, 0.2),
+            rgba(255, 0, 255, 0.2)
+          );
+          transform: rotate(45deg) translateX(-100%);
+          transition: transform 0.6s ease;
+          pointer-events: none;
+          z-index: 1;
+          filter: blur(6px);
+        }
+
+        .button-laser:hover::before {
+          transform: rotate(45deg) translateX(100%);
+        }
+
+        .button-laser:hover {
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                      0 0 30px rgba(255, 0, 255, 0.4),
+                      0 0 50px rgba(0, 255, 0, 0.2);
+          transform: scale(1.05);
+        }
+      `}</style>
     </div>
   );
 }
