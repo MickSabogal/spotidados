@@ -5,10 +5,10 @@ import { Github, Linkedin, Mail } from "lucide-react";
 const TEAM = [
   {
     name: "Mishal Saheersha",
-    github: "https://github.com/mishal-example",
-    linkedin: "https://www.linkedin.com/in/mishal-example",
-    email: "mishal@example.com",
-    image: "/cb.jpg",
+    github: "https://github.com/msaheers",
+    linkedin: "https://www.linkedin.com/in/mishal-saheer",
+    email: "mishalsaheersha10@gmail.com",
+    image: "Untitled design (1).jpg",
   },
   {
     name: "Guilherme França",
