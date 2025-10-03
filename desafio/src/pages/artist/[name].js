@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ArtistCard from "@/components/ArtistCard";
@@ -8,18 +7,19 @@ import Image from "next/image";
 
 export default function ArtistPage() {
   const router = useRouter();
-  const { name } = router.query; // agora o Next já dá o parâmetro direto da URL
+  const { name } = router.query;
 
-  const [artistName, setArtistName] = useState(
-    typeof name === "string" ? decodeURIComponent(name) : "Eminem"
-  );
+  // Inicializa como null para não renderizar artista errado
+  const [artistName, setArtistName] = useState(null);
   const [totalPlays, setTotalPlays] = useState(0);
 
+  // Atualiza artistName quando router e query estiverem prontos
   useEffect(() => {
     if (!router.isReady) return;
-    setArtistName(name ? decodeURIComponent(name) : "Eminem");
+    setArtistName(name ? decodeURIComponent(name) : null);
   }, [router.isReady, name]);
 
+  // Carrega total plays do histórico
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
@@ -42,6 +42,7 @@ export default function ArtistPage() {
     };
   }, []);
 
+  // Não renderiza nada até artistName estar definido
   if (!artistName) {
     return (
       <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center text-gray-400">
@@ -52,7 +53,6 @@ export default function ArtistPage() {
 
   return (
     <div className="min-h-screen bg-[#0b0b0b] flex flex-col items-center pb-24">
-      {/* Imagem do artista */}
       <div className="relative w-full max-w-md h-72 overflow-hidden rounded-b-3xl">
         <Image
           src={
@@ -90,10 +90,8 @@ export default function ArtistPage() {
         </div>
       </div>
 
-      {/* Card com estatísticas + Top 20 */}
       <ArtistCard artistName={artistName} totalPlays={totalPlays} />
 
-      {/* Bottom navigation */}
       <BottomNav />
     </div>
   );

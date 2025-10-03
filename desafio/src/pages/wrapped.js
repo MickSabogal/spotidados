@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
@@ -94,18 +93,12 @@ export default function EstatisticasPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex justify-center">
-      <div className="w-full max-w-md pb-24 px-4">
-        <div className="flex items-center gap-3 my-4">
-          <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden relative">
-            <Image src="/cb.jpg" alt="Profile" fill className="object-cover" />
-          </div>
-          <div className="flex-1 bg-gradient-to-r from-[#6BCA6F] to-[#000000] rounded-full px-4 py-2 flex items-center gap-2">
-            <span>🔍</span>
-            <input type="text" placeholder="Song, album, artist, etc" className="bg-transparent outline-none flex-1 text-white placeholder-white" />
-          </div>
-        </div>
+      <div className="w-full max-w-md pb-24">
+        {/* SearchBar Component */}
+        <SearchBar />
 
-        <div className="grid grid-cols-2 gap-4 mt-6">
+        {/* Estadísticas en cuadrados */}
+        <div className="grid grid-cols-2 gap-4 mt-6 px-4">
           <StatCard title="Played Music" value={isLoading ? "..." : stats?.totalPlays ?? "0"} />
           <StatCard title="Different Music" value={isLoading ? "..." : stats?.uniqueTracks ?? "0"} />
           <StatCard title="Minutes Listened" value={isLoading ? "..." : stats?.totalMinutes ?? "0"} />
@@ -116,7 +109,8 @@ export default function EstatisticasPage() {
           <StatCard title="First Music Played" value={isLoading ? "..." : stats?.firstMusic ?? "N/A"} />
         </div>
 
-        <div className="mt-12 flex flex-col gap-6">
+        {/* Botones Top 100 */}
+        <div className="mt-12 flex flex-col gap-6 px-4">
           <Link href="/top100ArtistsPage">
             <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors relative overflow-hidden button-laser">
               <span>Top 100 Artists</span>

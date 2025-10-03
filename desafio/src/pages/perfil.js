@@ -19,10 +19,10 @@ const TEAM = [
   },
   {
     name: "Jhow Tinoco",
-    github: "https://github.com/jhowtinoco",
-    linkedin: "https://www.linkedin.com/in/jhow-tinoco",
-    email: "jhow@example.com",
-    image: "/cb.jpg",
+    github: "https://github.com/Jhonathan-Tinoco",
+    linkedin: "https://www.linkedin.com/in/jhonathan-tinoco",
+    email: "jhonathan.tinoco.pt@gmail.com",
+    image: "/profilePicJhow.jpg",
   },
   {
     name: "Miguel Sabogal",

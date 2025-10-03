@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link'
 
 export default function Home() { 
     return (
@@ -17,12 +18,12 @@ export default function Home() {
                 <p className="text-white mb-6 text-center">
                     Log in to explore your music stats!
                 </p>
-                <a 
+                <Link
                     href="/homePage" 
                     className="bg-white text-pink-500 font-semibold px-6 py-3 rounded-full shadow hover:bg-gray-100 transition"
                 >
                     Enter
-                </a>
+                </Link>
             </div>
         </div>  
     )
