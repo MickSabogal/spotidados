@@ -36,12 +36,12 @@ export default function HomePage() {
         <div className="px-4 mt-6">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-xl font-semibold whitespace-nowrap">
-              Top Artist of this Month
+              Top Artist of All Time  
             </h2>
             <div className="h-px flex-1 bg-gray-700"></div>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="flex gap-4 pb-2 overflow-x-auto custom-scrollbar">
             {topArtists.map((artist) => (
               <Link
                 key={artist.id}
@@ -95,19 +95,19 @@ export default function HomePage() {
         <div className="px-4 mt-6">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-xl font-semibold whitespace-nowrap">
-              Recently Play
+              Discover your 2025 Wrapped
             </h2>
             <div className="h-px flex-1 bg-gray-700"></div>
           </div>
 
-          {/* Card de Wrapped 2024 */}
+          {/* Card de Wrapped 2025 */}
           <Link href="/wrapped" className="block">
             <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110">
               <div className="absolute top-6 left-6 w-24 h-24 bg-pink-600/60 rounded-2xl transform -rotate-12"></div>
               <div className="absolute bottom-6 right-6 w-40 h-40 border-8 border-red-400/40 rounded-3xl transform rotate-45"></div>
 
               <div className="relative z-10 text-center py-12">
-                <h3 className="text-4xl font-bold mb-3">Your 2024 Wrapped</h3>
+                <h3 className="text-4xl font-bold mb-3">Your 2025 Wrapped</h3>
                 <p className="text-white/90 mb-8 text-lg">
                   Jump into your year in audio.
                 </p>

@@ -22,7 +22,7 @@ export default function BottomNav() {
         <Link href="/perfil">
           <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
             <Users className="w-6 h-6" />
-            <span className="text-xs">Perfil</span>
+            <span className="text-xs">Our Team</span>
           </button>
         </Link>
       </div>
