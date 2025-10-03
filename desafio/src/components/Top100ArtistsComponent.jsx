@@ -60,7 +60,7 @@ export default function Top100ArtistsComponent({
             topArtists.map((item, index) => (
               <Link
                 key={index}
-                href={`/artist?name=${encodeURIComponent(item.artist)}`}
+                href={`/artist/${encodeURIComponent(item.artist)}`}
                 className="group relative block bg-gray-900 px-4 py-3 rounded-lg font-medium tracking-wide transition-all duration-300 hover:scale-105 hover:-translate-y-2 hover:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-blue-600/60 border border-transparent hover:border-blue-500/30"
               >
                 <div className="flex justify-between items-center">

@@ -110,7 +110,7 @@ export default function MainPage() {
             {topArtists.map((artist) => (
               <Link
                 key={artist.id}
-                href={`/artist?name=${encodeURIComponent(artist.name)}`}
+                href={`/artist/${encodeURIComponent(artist.name)}`}
                 className="flex flex-col items-center flex-shrink-0"
               >
                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-1">

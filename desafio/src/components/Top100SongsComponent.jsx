@@ -65,7 +65,7 @@ export default function Top100SongsComponent({ topSongs, isLoading, activeFilter
             topSongs.map((item, index) => (
               <Link
                 key={index}
-                href={`/artist?name=${encodeURIComponent(item.artist)}`}
+                href={`/artist/${encodeURIComponent(item.artist)}`}
                 className="group relative block bg-gray-900 px-4 py-3 rounded-lg font-medium tracking-wide justify-between items-center transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 hover:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-blue-600/60 border border-transparent hover:border-blue-500/30"
               >
                 <span className="relative z-10 transition-colors duration-300 group-hover:text-blue-100 text-sm">

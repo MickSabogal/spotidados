@@ -1,32 +1,25 @@
-// pages/artist.js
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ArtistCard from "@/components/ArtistCard";
 import BottomNav from "@/components/BottomNav";
-import { fetchHistory } from "../utils/fetchHistory";
+import { fetchHistory } from "@/utils/fetchHistory";
 import Image from "next/image";
 
 export default function ArtistPage() {
   const router = useRouter();
-  const queryName = Array.isArray(router.query.name)
-    ? router.query.name[0]
-    : router.query.name;
+  const { name } = router.query; // agora o Next já dá o parâmetro direto da URL
 
   const [artistName, setArtistName] = useState(
-    typeof queryName === "string" ? decodeURIComponent(queryName) : "Eminem"
+    typeof name === "string" ? decodeURIComponent(name) : "Eminem"
   );
   const [totalPlays, setTotalPlays] = useState(0);
 
-  // Atualiza artistName quando a query mudar
   useEffect(() => {
     if (!router.isReady) return;
-    const nameParam = Array.isArray(router.query.name)
-      ? router.query.name[0]
-      : router.query.name;
-    setArtistName(nameParam ? decodeURIComponent(nameParam) : "Eminem");
-  }, [router.isReady, router.query.name]);
+    setArtistName(name ? decodeURIComponent(name) : "Eminem");
+  }, [router.isReady, name]);
 
-  // Calcula plays totais do histórico
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
@@ -37,8 +30,8 @@ export default function ArtistPage() {
         if (!mounted || controller.signal.aborted) return;
         setTotalPlays(Array.isArray(json) ? json.length : 0);
       } catch (e) {
-        if (e && e.name === "AbortError") return; // ignora abort
-        console.error("Erro ao carregar history.json em artist.js:", e);
+        if (e && e.name === "AbortError") return;
+        console.error("Erro ao carregar history.json:", e);
         if (mounted) setTotalPlays(0);
       }
     })();
