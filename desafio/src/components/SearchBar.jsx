@@ -67,7 +67,7 @@ export default function SearchBar() {
         {/* Foto de perfil */}
         <Link href="/perfil">
           <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden flex-shrink-0 relative">
-            <Image src="/cb.jpg" alt="Profile" fill className="object-cover" />
+            <Image src="/profile_pic.png" alt="Profile" fill className="object-cover" />
           </div>
         </Link>
 
