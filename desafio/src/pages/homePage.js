@@ -98,6 +98,7 @@ export default function MainPage() {
       <div className="w-full max-w-md pb-24">
         <SearchBar />
 
+        {/* Top Artists */}
         <div className="px-4 mt-6">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-xl font-semibold whitespace-nowrap">
@@ -134,6 +135,7 @@ export default function MainPage() {
           </div>
         </div>
 
+        {/* Wrapped Card */}
         <div className="px-4 mt-6">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-xl font-semibold whitespace-nowrap">
@@ -143,7 +145,8 @@ export default function MainPage() {
           </div>
 
           <Link href="/wrapped" className="block">
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110 button-laser">
+            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 transition-all duration-300">
+              {/* card: normal cursor */}
               <div className="absolute top-6 left-6 w-24 h-24 bg-pink-600/60 rounded-2xl transform -rotate-12"></div>
               <div className="absolute bottom-6 right-6 w-40 h-40 border-8 border-red-400/40 rounded-3xl transform rotate-45"></div>
 
@@ -153,7 +156,7 @@ export default function MainPage() {
                   Jump into your year in audio.
                 </p>
                 <div className="flex justify-center">
-                  <button className="bg-blue-400 hover:bg-blue-500 text-black font-bold px-10 py-3 rounded-full transition-colors button-laser">
+                  <button className="bg-blue-400 hover:bg-blue-500 text-black font-bold px-10 py-3 rounded-full transition-colors button-laser cursor-grab">
                     Let&apos;s go
                   </button>
                 </div>
@@ -162,6 +165,7 @@ export default function MainPage() {
           </Link>
         </div>
 
+        {/* Green Button */}
         <div className="px-4 mt-4 mb-20">
           <Link href="/top100SongsPage">
             <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors button-laser">
@@ -171,20 +175,13 @@ export default function MainPage() {
         </div>
       </div>
 
-      {/* Scoped laser CSS for buttons */}
+      {/* Scoped laser CSS for buttons only */}
       <style jsx>{`
         .button-laser {
           position: relative;
           overflow: hidden;
           transition: all 0.3s ease;
           z-index: 0;
-        }
-
-        .button-laser span,
-        .button-laser {
-          position: relative;
-          z-index: 10;
-          display: block;
         }
 
         .button-laser::before {
