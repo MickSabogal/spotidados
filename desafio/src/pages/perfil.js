@@ -8,7 +8,7 @@ const TEAM = [
     github: "https://github.com/msaheers",
     linkedin: "https://www.linkedin.com/in/mishal-saheer",
     email: "mishalsaheersha10@gmail.com",
-    image: "Untitled design (1).jpg",
+    image: "/Mishal.png",
   },
   {
     name: "Guilherme França",
