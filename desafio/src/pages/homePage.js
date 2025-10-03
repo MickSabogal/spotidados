@@ -42,7 +42,6 @@ export default function MainPage() {
         setTopArtists(top);
       } catch (err) {
         if (err && err.name === "AbortError") {
-          // abort esperado em cleanup / StrictMode — ignorar
           console.debug("HomePage fetch aborted");
           return;
         }
@@ -144,7 +143,7 @@ export default function MainPage() {
           </div>
 
           <Link href="/wrapped" className="block">
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110">
+            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-500 via-orange-500 to-red-600 p-8 cursor-pointer transition-all duration-300 hover:brightness-110 button-laser">
               <div className="absolute top-6 left-6 w-24 h-24 bg-pink-600/60 rounded-2xl transform -rotate-12"></div>
               <div className="absolute bottom-6 right-6 w-40 h-40 border-8 border-red-400/40 rounded-3xl transform rotate-45"></div>
 
@@ -153,9 +152,11 @@ export default function MainPage() {
                 <p className="text-white/90 mb-8 text-lg">
                   Jump into your year in audio.
                 </p>
-                <button className="bg-blue-400 hover:bg-blue-500 text-black font-bold px-10 py-3 rounded-full transition-colors">
-                  Let&apos;s go
-                </button>
+                <div className="flex justify-center">
+                  <button className="bg-blue-400 hover:bg-blue-500 text-black font-bold px-10 py-3 rounded-full transition-colors button-laser">
+                    Let&apos;s go
+                  </button>
+                </div>
               </div>
             </div>
           </Link>
@@ -163,12 +164,61 @@ export default function MainPage() {
 
         <div className="px-4 mt-4 mb-20">
           <Link href="/top100SongsPage">
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors">
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-xl transition-colors button-laser">
               See the most played songs
             </button>
           </Link>
         </div>
       </div>
+
+      {/* Scoped laser CSS for buttons */}
+      <style jsx>{`
+        .button-laser {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          z-index: 0;
+        }
+
+        .button-laser span,
+        .button-laser {
+          position: relative;
+          z-index: 10;
+          display: block;
+        }
+
+        .button-laser::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+            120deg,
+            rgba(255, 0, 255, 0.2),
+            rgba(0, 255, 255, 0.2),
+            rgba(255, 255, 0, 0.2),
+            rgba(255, 0, 255, 0.2)
+          );
+          transform: rotate(45deg) translateX(-100%);
+          transition: transform 0.6s ease;
+          pointer-events: none;
+          z-index: 1;
+          filter: blur(6px);
+        }
+
+        .button-laser:hover::before {
+          transform: rotate(45deg) translateX(100%);
+        }
+
+        .button-laser:hover {
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                      0 0 30px rgba(255, 0, 255, 0.4),
+                      0 0 50px rgba(0, 255, 0, 0.2);
+          transform: scale(1.05);
+        }
+      `}</style>
     </div>
   );
 }
